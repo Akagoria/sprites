@@ -1,0 +1,51 @@
+import "agraphics" for Color, LinearGradientPattern, Path, Surface, vec2
+import "parts/objects" for WoodenBoard
+
+def SIZE = 128.0
+
+def CRATE_SIZE = 64.0
+
+def MARGIN = 2.0
+
+def LARGE_W = CRATE_SIZE
+def LARGE_H = 16.0
+
+def MEDIUM_W = 12.0
+def MEDIUM_H = CRATE_SIZE - 2.0 * MARGIN
+
+def SMALL_W = CRATE_SIZE - 2.0 * MARGIN
+def SMALL_H = 8.0
+
+def random = Random.new(System.time)
+def surface = Surface.new(vec2(SIZE, SIZE))
+def wood_color = Color.new(0xBA8C63FF)
+
+surface.draw {|ctx|
+  def offset = (SIZE - CRATE_SIZE) / 2.0
+  ctx.translate(offset, offset)
+
+  ctx.sub {|ctx|
+    def PADDING = 4.0
+    ctx.rectangle(PADDING, PADDING, CRATE_SIZE - 2.0 * PADDING, CRATE_SIZE - 2.0 * PADDING)
+    ctx.set_source_color(Color.darker(wood_color))
+    ctx.fill()
+  }
+
+  def small = WoodenBoard.new(random, vec2(SMALL_W, SMALL_H), 1.0, Color.darker(wood_color, 0.2))
+
+  for (i in 1..6) {
+    ctx.draw(small.at(vec2(MARGIN, SMALL_H * i.to_f)))
+  }
+
+  def medium = WoodenBoard.new(random, vec2(MEDIUM_W, MEDIUM_H), 1.0, Color.darker(wood_color, 0.1))
+
+  ctx.draw(medium.at(vec2(0.0, MARGIN)))
+  ctx.draw(medium.at(vec2(CRATE_SIZE - MEDIUM_W, MARGIN)))
+
+  def large = WoodenBoard.new(random, vec2(LARGE_W, LARGE_H), 1.0, wood_color)
+
+  ctx.draw(large.at(vec2(0.0, 0.0)))
+  ctx.draw(large.at(vec2(0.0, CRATE_SIZE - LARGE_H)))
+}
+
+surface.export("crate.png")

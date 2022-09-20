@@ -1,2 +1,1 @@
-# sprites
-Generated sprites
+# Generated Sprites for Akagoria

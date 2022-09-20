@@ -1,0 +1,115 @@
+import "agraphics" for Color, Join, Path, Vector2, vec2
+
+def random_point(center, radius, random) {
+  def r = Math.sqrt(random.float(0.0, radius * radius))
+  def theta = random.float(0.0, 2.0 * Math.PI)
+  return vec2(center.x + r * Math.cos(theta), center.y + r * Math.sin(theta))
+}
+
+class Transformable {
+  construct new() {
+    @position = vec2(0.0, 0.0)
+  }
+
+  at(position) {
+    @position = position
+    return this
+  }
+
+  apply(ctx) {
+    ctx.translate(@position)
+  }
+}
+
+class Brick is Transformable {
+  construct new(random, size, precision, color) {
+    super()
+    @random = random
+    assert(size is Vector2, "Size should be a Vector2.")
+    @size = size
+    assert(precision is Float, "Precision should be a Float.")
+    @precision = precision
+    assert(color is Color, "Color should be a Color.")
+    @color = color
+  }
+
+  (ctx) {
+    ctx.sub {|ctx|
+      .apply(ctx)
+
+      # base points
+      def base = [
+        vec2(0.0, 0.0),
+        vec2(@size.x, 0.0),
+        vec2(@size.x, @size.y),
+        vec2(0.0, @size.y),
+      ]
+
+      def points = base.map {|point| random_point(point, @precision, @random) }.to_a
+
+      ctx.move_to(points[0])
+
+      for (point in points.skip(1)) {
+        ctx.line_to(point)
+      }
+
+      ctx.close_path()
+
+      ctx.set_source_color(@color)
+      ctx.fill(Path.PRESERVE)
+
+      ctx.set_source_color(Color.darker(@color))
+      ctx.set_line_join(Join.MITER)
+      ctx.set_line_width(1.0)
+      ctx.stroke()
+    }
+  }
+}
+
+class WoodenBoard is Transformable {
+  construct new(random, size, precision, color) {
+    @random = random
+    assert(size is Vector2, "Size should be a Vector2.")
+    @size = size
+    assert(precision is Float, "Precision should be a Float.")
+    @precision = precision
+    assert(color is Color, "Color should be a Color.")
+    @color = color
+  }
+
+  (ctx) {
+    ctx.sub {|ctx|
+      .apply(ctx)
+
+      # base points
+      def base = [
+        vec2(0.0, 0.0),
+        vec2(@size.x / 2.0, 0.0),
+        vec2(@size.x, 0.0),
+        vec2(@size.x, @size.y / 2.0),
+        vec2(@size.x, @size.y),
+        vec2(@size.x / 2.0, @size.y),
+        vec2(0.0, @size.y),
+        vec2(0.0, @size.y / 2.0)
+      ]
+
+      def points = base.map {|point| random_point(point, @precision, @random) }.to_a
+
+      ctx.move_to(points[0])
+
+      for (point in points.skip(1)) {
+        ctx.line_to(point)
+      }
+
+      ctx.close_path()
+
+      ctx.set_source_color(@color)
+      ctx.fill(Path.PRESERVE)
+
+      ctx.set_source_color(Color.darker(@color))
+      ctx.set_line_join(Join.MITER)
+      ctx.set_line_width(1.0)
+      ctx.stroke()
+    }
+  }
+}

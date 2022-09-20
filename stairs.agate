@@ -1,0 +1,58 @@
+import "agraphics" for Color, LinearGradientPattern, Path, Surface, vec2
+import "parts/objects" for Brick
+
+def SIZE = 128.0
+
+def STEP_W = 100.0
+def STEP_H = 17.0
+
+def RAILING_W = 20.0
+def RAILING_H = 20.0
+
+# def PADDING = 14.0
+
+def random = Random.new(System.time)
+def surface = Surface.new(vec2(SIZE, SIZE))
+def stone_color = Color.new(0xA0A0A0FF)
+
+def step(percent) { Brick.new(random, vec2(STEP_W, STEP_H), 1.0, Color.darker(stone_color, percent)) }
+def railing = Brick.new(random, vec2(RAILING_W, RAILING_H), 1.0, stone_color)
+
+surface.draw {|ctx|
+  # steps
+  for (i in 0..6) {
+    ctx.draw(step(0.4 - 0.05 * i.to_f).at(vec2(14.0, 4.0 + STEP_H * i.to_f)))
+  }
+
+  # shadow
+  ctx.sub {|ctx|
+    def pattern = LinearGradientPattern.new(vec2(64.0, 14.0), vec2(64.0, 100.0))
+    pattern.add_color_stop(0.0, Color.new(0.0, 0.0, 0.0, 0.8))
+    pattern.add_color_stop(1.0, Color.new(0.7, 0.7, 0.7, 0.0))
+
+    ctx.move_to(14.0, 14.0)
+    ctx.line_to(14.0, 100.0)
+    ctx.line_to(114.0, 100.0)
+    ctx.line_to(114.0, 14.0)
+    ctx.close_path()
+
+    ctx.clip(Path.PRESERVE)
+
+    ctx.set_source_pattern(pattern)
+    ctx.fill()
+  }
+
+  # railings (left and right)
+  for (i in 0..5) {
+    ctx.draw(railing.at(vec2(4.0, 4.0 + 20.0 * i.to_f)))
+    ctx.draw(railing.at(vec2(4.0 + 100.0, 4.0 + 20.0 * i.to_f)))
+  }
+
+  # railings (top)
+  for (i in 1..4) {
+    ctx.draw(railing.at(vec2(4.0 + 20.0 * i.to_f, 4.0)))
+  }
+}
+
+
+surface.export("stairs.png")
