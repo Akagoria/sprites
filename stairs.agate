@@ -20,7 +20,7 @@ def railing = Brick.new(random, vec2(RAILING_W, RAILING_H), 1.0, stone_color)
 
 surface.draw {|ctx|
   # steps
-  for (i in 0..6) {
+  for (i in 1..6) {
     ctx.draw(step(0.4 - 0.05 * i.to_f).at(vec2(14.0, 4.0 + STEP_H * i.to_f)))
   }
 
@@ -30,12 +30,7 @@ surface.draw {|ctx|
     pattern.add_color_stop(0.0, Color.new(0.0, 0.0, 0.0, 0.8))
     pattern.add_color_stop(1.0, Color.new(0.7, 0.7, 0.7, 0.0))
 
-    ctx.move_to(14.0, 14.0)
-    ctx.line_to(14.0, 100.0)
-    ctx.line_to(114.0, 100.0)
-    ctx.line_to(114.0, 14.0)
-    ctx.close_path()
-
+    ctx.rectangle(14.0, 14.0, 100.0, 86.0)
     ctx.clip(Path.PRESERVE)
 
     ctx.set_source_pattern(pattern)
@@ -53,6 +48,5 @@ surface.draw {|ctx|
     ctx.draw(railing.at(vec2(4.0 + 20.0 * i.to_f, 4.0)))
   }
 }
-
 
 surface.export("stairs.png")
