@@ -1,4 +1,5 @@
 import "agraphics" for Color, LinearGradientPattern, Path, Surface, vec2
+import "parts/colors" for Colors
 import "parts/objects" for Brick
 
 def SIZE = 128.0
@@ -13,10 +14,9 @@ def RAILING_H = 20.0
 
 def random = Random.new(System.time)
 def surface = Surface.new(vec2(SIZE, SIZE))
-def stone_color = Color.new(0xA0A0A0FF)
 
-def step(percent) { Brick.new(random, vec2(STEP_W, STEP_H), 1.0, Color.darker(stone_color, percent)) }
-def railing = Brick.new(random, vec2(RAILING_W, RAILING_H), 1.0, stone_color)
+def step(percent) { Brick.new(random, vec2(STEP_W, STEP_H), 1.0, Color.darker(Colors.STONE, percent)) }
+def railing = Brick.new(random, vec2(RAILING_W, RAILING_H), 1.0, Colors.STONE)
 
 surface.draw {|ctx|
   # steps

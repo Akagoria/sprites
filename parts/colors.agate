@@ -1,0 +1,6 @@
+import "agraphics" for Color
+
+class Colors {
+  static STONE  { Color.new(0xA0A0A0FF) }
+  static WOOD   { Color.new(0xBA8C63FF) }
+}
