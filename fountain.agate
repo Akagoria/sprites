@@ -1,0 +1,111 @@
+import "agraphics" for Antialias, Color, LinearGradientPattern, Operator, Path, RadialGradientPattern, Surface, vec2
+import "parts/colors" for Colors
+import "parts/objects" for Brick
+
+def SIZE = 128.0
+def STONE_SIZE = 10.0
+
+def random = Random.new(System.time)
+
+def stone = Brick.new(random, vec2(STONE_SIZE, STONE_SIZE), 1.0, Colors.STONE)
+def blue = Color.new(0x007577FF)
+
+def square(x) { x * x }
+
+once {
+  def FOUNTAIN_RADIUS = 55.0
+  def INNER_RADIUS = FOUNTAIN_RADIUS - STONE_SIZE / 2.0
+  def CIRCUM = 2.0 * Math.PI * FOUNTAIN_RADIUS
+  def STONE_NUMBER = (CIRCUM / STONE_SIZE).to_i
+
+  IO.println("Stones: %(STONE_NUMBER)")
+  IO.println("Surface (round): %((Math.PI * square(INNER_RADIUS)).to_i)")
+
+  def water = RadialGradientPattern.new(vec2(0.0, 0.0), 0.0, vec2(0.0, 0.0), INNER_RADIUS)
+  water.add_color_stop(0.0, blue)
+  water.add_color_stop(0.9, blue)
+  water.add_color_stop(1.0, Color.darker(blue))
+
+  def surface = Surface.new(vec2(SIZE, SIZE))
+  surface.draw {|ctx|
+    ctx.set_antialias(Antialias.BEST)
+    ctx.translate(SIZE / 2.0, SIZE / 2.0)
+
+    ctx.sub {|ctx|
+      ctx.circle(0.0, 0.0, INNER_RADIUS)
+      ctx.set_source_pattern(water)
+      ctx.fill()
+    }
+
+    for (i in 1..STONE_NUMBER) {
+      ctx.sub {|ctx|
+        ctx.rotate(i.to_f * Math.PI * 2.0 / STONE_NUMBER.to_f)
+        ctx.draw(stone.at(vec2(0.0 - STONE_SIZE / 2.0, FOUNTAIN_RADIUS - STONE_SIZE / 2.0)))
+      }
+    }
+
+  }
+
+  surface.export("fountain_round.png")
+}
+
+once {
+  def FOUTAIN_SIZE = 110.0
+  def STONE_NUMBER = (FOUTAIN_SIZE / STONE_SIZE).to_i
+  def OFFSET = (SIZE - FOUTAIN_SIZE) / 2.0
+
+  IO.println("Surface (square): %(square(FOUTAIN_SIZE - 2.0 * STONE_SIZE))")
+
+  def water_x = LinearGradientPattern.new(vec2(STONE_SIZE, 0.0), vec2((STONE_NUMBER - 1).to_f * STONE_SIZE, 0.0))
+  def water_y = LinearGradientPattern.new(vec2(0.0, STONE_SIZE), vec2(0.0, (STONE_NUMBER - 1).to_f * STONE_SIZE))
+
+  for (water in [ water_x, water_y ]) {
+    water.add_color_stop(0.0, Color.darker(blue))
+    water.add_color_stop(0.05, blue)
+    water.add_color_stop(0.95, blue)
+    water.add_color_stop(1.0, Color.darker(blue))
+  }
+
+  def surface = Surface.new(vec2(SIZE, SIZE))
+  surface.draw {|ctx|
+    ctx.set_antialias(Antialias.BEST)
+    ctx.translate(OFFSET, OFFSET)
+
+    ctx.sub {|ctx|
+      ctx.rectangle(vec2(STONE_SIZE, STONE_SIZE), vec2((STONE_NUMBER - 2).to_f * STONE_SIZE, (STONE_NUMBER - 2).to_f * STONE_SIZE))
+
+      ctx.set_source_pattern(water_x)
+      ctx.fill(Path.PRESERVE)
+
+      ctx.set_operator(Operator.DARKEN)
+      ctx.set_source_pattern(water_y)
+      ctx.fill()
+    }
+
+    for (i in 0...STONE_NUMBER) {
+      ctx.sub {|ctx|
+        ctx.draw(stone.at(vec2(i.to_f * STONE_SIZE, 0.0)))
+        ctx.draw(stone.at(vec2(i.to_f * STONE_SIZE, (STONE_NUMBER - 1).to_f * STONE_SIZE)))
+      }
+    }
+
+    for (i in 1...(STONE_NUMBER - 1)) {
+      ctx.sub {|ctx|
+        ctx.draw(stone.at(vec2(0.0, i.to_f * STONE_SIZE)))
+        ctx.draw(stone.at(vec2((STONE_NUMBER - 1).to_f * STONE_SIZE, i.to_f * STONE_SIZE)))
+      }
+    }
+
+  }
+
+  surface.export("fountain_square.png")
+}
+
+once {
+  def surface = Surface.new(vec2(SIZE, SIZE))
+  surface.draw {|ctx|
+    ctx.set_source_color(blue)
+    ctx.paint()
+  }
+  surface.export("fountain.png")
+}

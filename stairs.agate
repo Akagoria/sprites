@@ -1,4 +1,4 @@
-import "agraphics" for Color, LinearGradientPattern, Path, Surface, vec2
+import "agraphics" for Antialias, Color, LinearGradientPattern, Path, Surface, vec2
 import "parts/colors" for Colors
 import "parts/objects" for Brick
 
@@ -19,6 +19,8 @@ def step(percent) { Brick.new(random, vec2(STEP_W, STEP_H), 1.0, Color.darker(Co
 def railing = Brick.new(random, vec2(RAILING_W, RAILING_H), 1.0, Colors.STONE)
 
 surface.draw {|ctx|
+  ctx.set_antialias(Antialias.BEST)
+
   # steps
   for (i in 1..6) {
     ctx.draw(step(0.4 - 0.05 * i.to_f).at(vec2(14.0, 4.0 + STEP_H * i.to_f)))

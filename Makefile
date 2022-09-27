@@ -1,6 +1,6 @@
 # Makefile for creating the sprites automatically
 
-TARGETS = crate.png stairs.png
+TARGETS = crate.png stairs.png fountain.png
 
 all: $(TARGETS)
 

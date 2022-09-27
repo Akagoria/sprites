@@ -1,4 +1,4 @@
-import "agraphics" for Color, LinearGradientPattern, Path, Surface, vec2
+import "agraphics" for Antialias, Color, LinearGradientPattern, Path, Surface, vec2
 import "parts/colors" for Colors
 import "parts/objects" for WoodenBoard
 
@@ -21,6 +21,8 @@ def random = Random.new(System.time)
 def surface = Surface.new(vec2(SIZE, SIZE))
 
 surface.draw {|ctx|
+  ctx.set_antialias(Antialias.BEST)
+
   def offset = (SIZE - CRATE_SIZE) / 2.0
   ctx.translate(offset, offset)
 
